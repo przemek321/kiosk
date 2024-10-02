@@ -1,0 +1,243 @@
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Status Devices</title>
+    <style>
+        body {
+            background-color: #1E1E1E;
+            color: #E0E0E0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            color: #1A73E8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        th {
+            background-color: #2A2A2A;
+        }
+
+        td {
+            background-color: #333;
+        }
+
+        img {
+            border-radius: 5px;
+        }
+
+        tr:hover {
+            background-color: #444;
+        }
+
+        .add-device {
+            display: block;
+            width: 150px;
+            margin: 0px auto;
+            text-align: center;
+            padding: 10px;
+            background-color: #1A73E8;
+            color: #FFFFFF;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .add-ewakuacja {
+            display: block;
+            width: 150px;
+            margin: 0px auto;
+            text-align: center;
+            padding: 10px;
+            background-color: #ff0015;
+            color: #FFFFFF;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .add-device:hover {
+            background-color: #1367C0;
+        }
+
+        .status-online {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .status-offline {
+            color: #F44336;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #333;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            color: #FFF;
+        }
+      
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+      
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Status TV</h1>
+    <table>
+        <tr>
+            <th><a class="add-device" href="/devices/add">Dodaj Maline</a> </th>
+            <th><a class="add-ewakuacja" href="/devices/add">Ewakuacja</a></th>
+            </tr>
+            </table>
+    
+    <table>
+        <tr>
+            <th>Nazwa</th>
+            <th>Adres IP</th>
+            <th>Status</th>
+            <th>Ostatni Ping</th>
+            <th>Screenshot</th>
+            <th>Adres URL</th>
+            <th>Akcje</th>
+        </tr>
+        <% devices.forEach(device => { %>
+        <tr>
+            <td>
+                <%= device.name %>
+            </td>
+            <td><%= device.ip %></td>
+            <td class="<%= device.status === 'Online' ? 'status-online' : 'status-offline' %>">
+                <%= device.status %>
+            </td>
+            <td><%= device.lastPing %></td>
+            <td>
+                <img src="http://<%= device.ip %>:3000/public/scren123.png" alt="screenshot" width="200"
+                     onclick="openFullScreen('http://<%= device.ip %>:3000/public/scren123.png')"
+                     style="cursor: pointer;" 
+                     onerror="this.onerror=null;this.src='';this.outerHTML='<span>OFFLINE</span>';">
+                <br>
+                <button onclick="Screenshot('<%= device.ip %>')">Screenshot</button>
+            </td>
+            
+                 <td><%= device.currentUrl %>
+                <button onclick="openUrlModal('<%= device.id %>', '<%= device.currentUrl %>')">Edit URL</button>
+            </td>
+            <td>
+                <!-- <a href="http://<%= device.ip %>:3000/reboot">Reboot</a> |  -->
+                <button onclick="rebootDevice('<%= device.ip %>')">Restart</button>
+                <!-- <a href="http://<%= device.ip %>:3000/screen">Screenshot</a> -->
+                
+                <button onclick="openDeviceModal('<%= device.id %>', '<%- JSON.stringify(device).replace(/"/g, '&quot;') %>')">Edycja</button>
+
+            </td>
+        </tr>
+        <% }) %>
+    </table>
+    <%- include('okno_url') %>
+    <%- include('okno_device') %>
+</body>
+</html>
+
+<script>
+    function rebootDevice(ip) {
+      fetch(`http://${ip}:3000/reboot`, {
+        method: 'GET'
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Device is rebooting.');
+        } else {
+          alert('Failed to reboot the device.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error while rebooting.');
+      });
+    }
+    function Screenshot(ip) {
+    fetch(`http://${ip}:3000/screen`, {
+      method: 'GET'
+    })
+    .then(response => {
+      if (response.ok) {
+        location.reload();
+      } else {
+        throw new Error('Failed to take screenshot.');
+      }
+    })
+    
+  }
+  </script>
+
+<script>
+    function openFullScreen(imageUrl) {
+      // Otwórz nowy widok w pełnym ekranie, otwierając obraz w nowym oknie
+      const newWindow = window.open(imageUrl, '_blank');
+      newWindow.focus(); // Ustaw focus na nowe okno
+    }
+  
+    function Screenshot(ip) {
+      fetch(`http://${ip}:3000/screen`, {
+        method: 'GET'
+      })
+      .then(response => {
+        if (response.ok) {
+          location.reload(); // Odśwież stronę po zrobieniu zrzutu ekranu
+        } else {
+          throw new Error('Failed to take screenshot.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error while taking screenshot.');
+      });
+    }
+  </script>

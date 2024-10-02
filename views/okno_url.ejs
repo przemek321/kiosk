@@ -1,0 +1,49 @@
+<!-- Modal for editing the URL -->
+<div id="urlModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUrlModal()">&times;</span>
+        <h2>Edit URL</h2>
+        <form id="editUrlForm" onsubmit="submitUrlChange(event)">
+            <label for="newUrl">New URL:</label>
+            <input type="text" id="newUrl" name="newUrl" required>
+            <input type="hidden" id="deviceId">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+  function openUrlModal(id, currentUrl) {
+      document.getElementById('deviceId').value = id;
+      document.getElementById('newUrl').value = currentUrl;
+      document.getElementById('urlModal').style.display = 'block';
+  }
+
+  function closeUrlModal() {
+    document.getElementById('urlModal').style.display = 'none';
+  }
+
+  function submitUrlChange(event) {
+    event.preventDefault();
+    const id = document.getElementById('deviceId').value;
+    const newUrl = document.getElementById('newUrl').value;
+
+    fetch('/devices/update-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, newUrl }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert(data.message);
+      closeUrlModal();
+      location.reload();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error changing URL');
+    });
+  }
+</script>

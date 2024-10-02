@@ -1,0 +1,31 @@
+[
+  {
+    "id": "1727342316470",
+    "ip": "192.168.0.161",
+    "status": "Online",
+    "lastPing": "10/2/2024, 4:48:06 PM",
+    "currentUrl": "https://twojastara.pl/",
+    "refreshInterval": "Error fetching interval",
+    "name": "cos tam 2"
+  },
+  {
+    "id": "1727360373086",
+    "name": "Linia ",
+    "ip": "192.168.0.184",
+    "screenshot": "http://192.168.0.184:3000/public/scren123.png",
+    "status": "Online",
+    "lastPing": "10/2/2024, 4:48:06 PM",
+    "currentUrl": "https://www.simplilearn.com/tutorials/selenium-tutorial/selenium-interview-questions-and-answers",
+    "refreshInterval": "Device offline"
+  },
+  {
+    "id": "1727563665307",
+    "name": "Przemysław Kłosowski",
+    "ip": "192.168.0.156:3000",
+    "screenshot": "http://192.168.0.156:3000/public/scren123.png",
+    "status": "Offline",
+    "lastPing": "10/2/2024, 4:48:06 PM",
+    "currentUrl": "TV offline",
+    "refreshInterval": "Device offline"
+  }
+]

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title><%= device.id ? "Edit Device" : "Add Device" %></title>
+</head>
+<body>
+    <h1><%= device.id ? "Edit Device" : "Add Device" %></h1>
+    <form action="/devices/<%= device.id ? 'update' : 'add' %>" method="post">
+        <% if (device.id) { %>
+            <input type="hidden" name="id" value="<%= device.id %>">
+        <% } %>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<%= device.name || '' %>" required><br>
+        <label for="ip">IP:</label>
+        <input type="text" id="ip" name="ip" value="<%= device.ip || '' %>" required><br>
+        <label for="screenshot">Screenshot URL:</label>
+        <input type="text" id="screenshot" name="screenshot" value="<%= device.screenshot || '' %>"><br>
+        <input type="submit" value="<%= device.id ? 'Save Changes' : 'Add Device' %>">
+    </form>
+</body>
+</html>

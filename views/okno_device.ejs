@@ -1,0 +1,61 @@
+<!-- Modal for editing device info (name, IP, screenshot) -->
+<div id="deviceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeviceModal()">&times;</span>
+        <h2>Edit Device Information</h2>
+        <form id="editDeviceForm" onsubmit="submitDeviceChange(event)">
+            <label for="newName">Name:</label>
+            <input type="text" id="newName" name="newName" required>
+
+            <label for="newIp">IP:</label>
+            <input type="text" id="newIp" name="newIp" required>
+
+            <!-- <label for="newScreenshot">Screenshot URL:</label>
+            <input type="text" id="newScreenshot" name="newScreenshot" required> -->
+
+            <input type="hidden" id="deviceIdEdit">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+  function openDeviceModal(id, deviceData) {
+      const device = JSON.parse(deviceData);  // Parsujemy JSON, aby uzyskać dane urządzenia
+      document.getElementById('deviceIdEdit').value = id;
+      document.getElementById('newName').value = device.name;
+      document.getElementById('newIp').value = device.ip;
+      // document.getElementById('newScreenshot').value = device.screenshot;
+      document.getElementById('deviceModal').style.display = 'block';
+  }
+
+  function closeDeviceModal() {
+    document.getElementById('deviceModal').style.display = 'none';
+  }
+
+  function submitDeviceChange(event) {
+    event.preventDefault();
+    const id = document.getElementById('deviceIdEdit').value;
+    const newName = document.getElementById('newName').value;
+    const newIp = document.getElementById('newIp').value;
+    // const newScreenshot = document.getElementById('newScreenshot').value;
+
+    fetch('/devices/update-device', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, newName, newIp }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert(data.message);
+      closeDeviceModal();
+      location.reload();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error');
+    });
+  }
+</script>
