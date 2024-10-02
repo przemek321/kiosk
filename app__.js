@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios'); // Biblioteka do zapytań HTTP
 const app = express();
 const port = 3001;
-
+//test cos tam 
 const devicesFilePath = path.join(__dirname, 'devices.json');
 
 app.set('view engine', 'ejs');
