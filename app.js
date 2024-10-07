@@ -7,12 +7,23 @@ const app = express();
 const port = 3001;
 
 const devicesFilePath = path.join(__dirname, 'devices.json');
+const previousUrlsFilePath = path.join(__dirname, 'previousUrls.json');
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/public', express.static(path.join(__dirname, 'screenshots')));
 
+function loadPreviousUrls() {
+  if (fs.existsSync(previousUrlsFilePath)) {
+    return JSON.parse(fs.readFileSync(previousUrlsFilePath, 'utf8'));
+  }
+  return {}; // Jeśli plik nie istnieje, zwróć pusty obiekt
+}
+
+function savePreviousUrls() {
+  fs.writeFileSync(previousUrlsFilePath, JSON.stringify(previousUrls, null, 2));
+}
 
 function loadDevices() {
     if (fs.existsSync(devicesFilePath)) {
@@ -26,6 +37,8 @@ function saveDevices(devices) {
 }
 
 let devices = loadDevices();
+
+let previousUrls = loadPreviousUrls();
 
 const axios = require('axios'); // Dodaj axios do wysyłania żądań HTTP
 
@@ -197,6 +210,32 @@ function updateDeviceIp(deviceId, newIp) {
     });
 }
 
+app.post('/evacuation/start', (req, res) => {
+  // Zapisz poprzednie URL-e i ustaw nowy URL na stronę ewakuacyjną
+  devices.forEach(device => {
+    previousUrls[device.id] = device.currentUrl; // Zapisz poprzedni URL do pliku
+    axios.post(`http://${device.ip}:3000/change-url`, {
+      url: 'https://images.smartsign.com/img/lg/S/emergency-evacuation-alarm-projecting-sign-s2-1763.png'
+    }).catch(err => {
+      console.error(`Błąd zmiany URL dla urządzenia ${device.id}:`, err.message);
+    });
+  });
+  savePreviousUrls(); // Zapisz zaktualizowane URL-e do pliku
+  res.json({ message: 'Ewakuacja włączona' });
+});
+
+app.post('/evacuation/stop', (req, res) => {
+  // Przywróć poprzednie URL-e
+  devices.forEach(device => {
+    const previousUrl = previousUrls[device.id] || device.currentUrl;
+    axios.post(`http://${device.ip}:3000/change-url`, {
+      url: previousUrl
+    }).catch(err => {
+      console.error(`Błąd przywracania URL dla urządzenia ${device.id}:`, err.message);
+    });
+  });
+  res.json({ message: 'Ewakuacja wyłączona, poprzednie URL-e przywrócone' });
+});
 
  
   

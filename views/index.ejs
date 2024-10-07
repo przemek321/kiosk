@@ -144,8 +144,8 @@
     <table>
         <tr>
             <th><a class="add-device" href="/devices/add">Dodaj Maline</a> </th>
-            <th><a class="add-ewakuacja-start" href="/devices/add">Ewakuacja Start</a></th>
-            <th><a class="add-ewakuacja-stop" href="/devices/add">Ewakuacja Stop</a></th>
+            <th><button onclick="startEvacuation()">Ewakuacja START</button></th>
+            <th><button onclick="stopEvacuation()">Ewakuacja STOP</button></th>
             </tr>
             </table>
     
@@ -240,5 +240,45 @@
         console.error('Error:', error);
         alert('Error while taking screenshot.');
       });
+
+      
     }
+
+    function startEvacuation() {
+  fetch('/evacuation/start', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Ewakuacja została uruchomiona!');
+    location.reload();
+  })
+  .catch(error => {
+    console.error('Błąd podczas uruchamiania ewakuacji:', error);
+    alert('Błąd podczas uruchamiania ewakuacji.');
+  });
+}
+
+function stopEvacuation() {
+  fetch('/evacuation/stop', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Ewakuacja została zatrzymana!');
+    location.reload();
+  })
+  .catch(error => {
+    console.error('Błąd podczas zatrzymywania ewakuacji:', error);
+    alert('Błąd podczas zatrzymywania ewakuacji.');
+  });
+}
   </script>
+
+  
