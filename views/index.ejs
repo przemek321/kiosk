@@ -66,13 +66,24 @@
             text-decoration: none;
         }
 
-        .add-ewakuacja {
+        .add-ewakuacja-start {
             display: block;
             width: 150px;
             margin: 0px auto;
             text-align: center;
             padding: 10px;
             background-color: #ff0015;
+            color: #FFFFFF;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .add-ewakuacja-stop {
+            display: block;
+            width: 150px;
+            margin: 0px auto;
+            text-align: center;
+            padding: 10px;
+            background-color: #10ec0d;
             color: #FFFFFF;
             border-radius: 5px;
             text-decoration: none;
@@ -133,7 +144,8 @@
     <table>
         <tr>
             <th><a class="add-device" href="/devices/add">Dodaj Maline</a> </th>
-            <th><a class="add-ewakuacja" href="/devices/add">Ewakuacja</a></th>
+            <th><a class="add-ewakuacja-start" href="/devices/add">Ewakuacja Start</a></th>
+            <th><a class="add-ewakuacja-stop" href="/devices/add">Ewakuacja Stop</a></th>
             </tr>
             </table>
     
@@ -192,29 +204,17 @@
       })
       .then(response => {
         if (response.ok) {
-          alert('Device is rebooting.');
+          alert('Maline sie restartuje');
         } else {
-          alert('Failed to reboot the device.');
+          alert('Blad przy restarcie');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error while rebooting.');
+        alert('Blad przy restarcie');
       });
     }
-    function Screenshot(ip) {
-    fetch(`http://${ip}:3000/screen`, {
-      method: 'GET'
-    })
-    .then(response => {
-      if (response.ok) {
-        location.reload();
-      } else {
-        throw new Error('Failed to take screenshot.');
-      }
-    })
-    
-  }
+ 
   </script>
 
 <script>
@@ -230,6 +230,7 @@
       })
       .then(response => {
         if (response.ok) {
+          alert('Screenshot wykonany prawidlowo')
           location.reload(); // Odśwież stronę po zrobieniu zrzutu ekranu
         } else {
           throw new Error('Failed to take screenshot.');
