@@ -19,7 +19,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Uruchom aplikację (przykład Node.js)
-echo Uruchamianie aplikacji...
-npm start
+@REM echo Uruchamianie aplikacji...
+@REM npm start
 
 pause
