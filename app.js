@@ -215,7 +215,7 @@ app.post('/evacuation/start', (req, res) => {
   devices.forEach(device => {
     previousUrls[device.id] = device.currentUrl; // Zapisz poprzedni URL do pliku
     axios.post(`http://${device.ip}:3000/change-url`, {
-      url: 'https://images.smartsign.com/img/lg/S/emergency-evacuation-alarm-projecting-sign-s2-1763.png'
+      url: 'http://156.4.10.182:8084/dash/ewakuacja.html'
     }).catch(err => {
       console.error(`Błąd zmiany URL dla urządzenia ${device.id}:`, err.message);
     });
