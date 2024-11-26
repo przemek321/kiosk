@@ -146,6 +146,7 @@
             <th><a class="add-device" href="/devices/add">Dodaj Maline</a> </th>
             <th><button onclick="startEvacuation()">Ewakuacja START</button></th>
             <th><button onclick="stopEvacuation()">Ewakuacja STOP</button></th>
+            <th><button onclick="takeAllScreenshots()">Zrób wszystkie screenshoty</button></th>  
             </tr>
             </table>
     
@@ -279,6 +280,32 @@ function stopEvacuation() {
     alert('Błąd podczas zatrzymywania ewakuacji.');
   });
 }
+
+function takeAllScreenshots() {  
+    console.log('Starting to take screenshots for all devices...');  
+    // Wywołaj endpoint do wykonania zrzutów ekranu na wszystkich urządzeniach  
+    fetch('/screenshots/all', {  
+        method: 'POST',  
+        headers: {  
+            'Content-Type': 'application/json',  
+        }  
+    })  
+    .then(response => {  
+        if (!response.ok) {  
+            throw new Error('Network response was not ok');  
+        }  
+        return response.json();  
+    })  
+    .then(data => {  
+        console.log('Response from server:', data);  
+        alert('Wszystkie screenshoty zostały wykonane!');  
+        location.reload();  
+    })  
+    .catch(error => {  
+        console.error('Błąd podczas wykonywania screenshotów:', error);  
+        alert('Błąd podczas wykonywania screenshotów.');  
+    });  
+}  
   </script>
 
   

@@ -210,32 +210,66 @@ function updateDeviceIp(deviceId, newIp) {
     });
 }
 
-app.post('/evacuation/start', (req, res) => {
-  // Zapisz poprzednie URL-e i ustaw nowy URL na stronę ewakuacyjną
-  devices.forEach(device => {
-    previousUrls[device.id] = device.currentUrl; // Zapisz poprzedni URL do pliku
-    axios.post(`http://${device.ip}:3000/change-url`, {
-      url: 'http://156.4.10.182:8084/dash/ewakuacja.html'
-    }).catch(err => {
-      console.error(`Błąd zmiany URL dla urządzenia ${device.id}:`, err.message);
-    });
-  });
-  savePreviousUrls(); // Zapisz zaktualizowane URL-e do pliku
-  res.json({ message: 'Ewakuacja włączona' });
-});
+app.post('/evacuation/start', (req, res) => {  
+  // Sprawdź, czy plik previousUrls.json już istnieje i zawiera dane  
+  const previousUrlsExists = fs.existsSync(previousUrlsFilePath) && Object.keys(previousUrls).length > 0;  
+  
+  if (!previousUrlsExists) {  
+    // Zapisz poprzednie URL-e tylko wtedy, gdy plik nie istnieje lub jest pusty  
+    devices.forEach(device => {  
+      previousUrls[device.id] = device.currentUrl; // Zapisz poprzedni URL do obiektu  
+      axios.post(`http://${device.ip}:3000/change-url`, {  
+        url: 'http://156.4.10.182:8084/dash/ewakuacja_test.html'  
+      }).catch(err => {  
+        console.error(`Błąd zmiany URL dla urządzenia ${device.id}:`, err.message);  
+      });  
+    });  
+    savePreviousUrls(); // Zapisz zaktualizowane URL-e do pliku  
+  } else {  
+    // Zmień URL na stronę ewakuacyjną bez zapisywania poprzednich URL-i  
+    devices.forEach(device => {  
+      axios.post(`http://${device.ip}:3000/change-url`, {  
+        url: 'http://156.4.10.182:8084/dash/ewakuacja_test.html'  
+      }).catch(err => {  
+        console.error(`Błąd zmiany URL dla urządzenia ${device.id}:`, err.message);  
+      });  
+    });  
+  }  
+  
+  res.json({ message: 'Ewakuacja włączona' });  
+});  
+  
 
-app.post('/evacuation/stop', (req, res) => {
-  // Przywróć poprzednie URL-e
-  devices.forEach(device => {
-    const previousUrl = previousUrls[device.id] || device.currentUrl;
-    axios.post(`http://${device.ip}:3000/change-url`, {
-      url: previousUrl
-    }).catch(err => {
-      console.error(`Błąd przywracania URL dla urządzenia ${device.id}:`, err.message);
-    });
-  });
-  res.json({ message: 'Ewakuacja wyłączona, poprzednie URL-e przywrócone' });
-});
+app.post('/evacuation/stop', (req, res) => {  
+  // Przywróć poprzednie URL-e  
+  devices.forEach(device => {  
+    const previousUrl = previousUrls[device.id] || device.currentUrl;  
+    axios.post(`http://${device.ip}:3000/change-url`, {  
+      url: previousUrl  
+    }).catch(err => {  
+      console.error(`Błąd przywracania URL dla urządzenia ${device.id}:`, err.message);  
+    });  
+  });  
+  
+  // Wyczyść zapisane poprzednie URL-e po zakończeniu ewakuacji  
+  previousUrls = {};  
+  savePreviousUrls(); // Zapisz pusty obiekt do pliku previousUrls.json  
+  
+  res.json({ message: 'Ewakuacja wyłączona, poprzednie URL-e przywrócone' });  
+});  
+
+app.post('/screenshots/all', async (req, res) => {  
+  try {  
+      for (let device of devices) {  
+        await axios.get(`http://${device.ip}:3000/screen`);  
+        console.log(`Screenshot taken for device ${device.ip}`);  
+    }  
+    res.json({ message:'Wszystkie screenshoty zostały wykonane!' });  
+  } catch (error) {  
+    console.error('Error taking screenshots for all devices:', error.message);  
+    res.status(500).json({ message:'Błąd podczas wykonywania screenshotów.' });  
+  }  
+});  
 
  
   
